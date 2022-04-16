@@ -419,11 +419,57 @@ DOM ağacı, CSSOM ağacı ve rendering mantığı oluşturma işi, browser'da b
 
 #### Rendering Process in Browsers
 
-JavaScript engine sağlayıcıları standartlaştırılmış belirli kurallara uymak zorundadır. Bu standartlara sahip olmak browser'ların tutarlı şekilde JavaScript deneyimi sağlamasını sağlar.
-
-Ancak browser'ların rendering işleminde bu durum geçerli değildir.
+JavaScript engine sağlayıcıları standartlaştırılmış belirli kurallara uymak zorundadır. Bu standartlara sahip olmak browser'ların tutarlı şekilde JavaScript deneyimi sağlamasını sağlar. Ancak browser'ların rendering işleminde bu durum geçerli değildir.
 
 ##### Parsing and External Resources
+
+Parsing işlemi, HTML kodundan DOM ağacı oluşturmadır. HTML kodları sunucudan gelmeye başladığında gelen byte'a göre ekranda render'lama işlemi başlar.
+
+First Paint (FP), browser'ın ekranda bir şeyler yazdırmaya başladığı zaman anlamına gelir (body'nin background renginin ilk pikselinin ekranda boyanması).
+First Contentful Paint (FCP), browser'ın metin veya resim gibi içeriğin ilk pikselini oluşturduğu zaman anlamına gelir. Largest Contentful Paint (LCP), browser'ın büyük metin veya resim parçalarını oluşturduğu zaman anlamına gelir.
+
+L, browser tarafından window object'i üzerinde yayılan onload olayını ifade eder. DCL, document object'inde yayılan DOMContentLoaded olayını temsil eder.
+
+DOM parsing işlemi main thread'de gerçekleşir. Ana JavaScript yürütme thread'i meşgulse bu thread serbest kalana kadar, script element'lerinin bloklaması bitene kadar parsing devam etmez.
+
+##### Parser-Blocking Scripts
+
+Parsing engelleme script'i, HTML'nin ayrıştırılmasını durduran bir JavaScript dosyası/kodudur. Browser bir script öğesiyle karşılaştığında, bu gömülü script ise, önce bu script'i çalıştırır ve ardından DOM ağacını oluşturmak için HTML'i ayrıştırmaya devam eder. Yani tüm gömülü script'ler parser'i engeller.
+
+Script, harici bir script dosyasıysa, browser main thread'den harici script dosyasını indirmeye başlar ancak bu dosya indirilene kadar main thread'in yürütülmesini durdurur. JavaScript'in DOM element'lerine erişip bunları değiştirebileceği anlamına gelir. Ancak browser, DOM parsing ve script yürütmeyi paralel olarak çalıştırmak isterse, DOM parser thread'i ile main thread arasında yarış koşulları olabilir. Bu nedenle DOM parsing, main thread ile yapılmalıdır. Ancak, script dosyası arka planda indirilirken DOM parsing'i durdurmak çoğu durumda gereksizdir. Bu nedenle HTML5 bize script etiketi için async attribute'unu verir. DOM parser, async attribute'una sahip harici bir script dosyası element'i ile karşılaştığında, script dosyası arka planda indirilirken parsing işlemini durdurmaz. Ancak dosya indirildikten sonra parsing duracak ve script dosyası (kod) yürütülecektir.
+Ayrıca, script element'i için async attribute'una benzer şekilde çalışan ancak async attribute'undan farklı olarak, dosya tamamen indirildiğinde bile script yürütülmeyen defer attribute'una sahibiz.
+
+##### Render-Blocking CSS
+
+Browser, <style> bloğunu bulduğunda tüm gömülü CSS'i ayrıştırır ve CSSOM ağacını yeni CSS kurallarıyla günceller. Sonrasonda, HTML'i normal şekilde ayrıştırmaya devam edecektir. Aynısı satır içi stil için de geçerlidir. Ancak, browser harici bir stylesheet dosyasıyla karşılaştığında parsing'i engellemez, bu nedenle browser arka planda sessizce indirebilir ve DOM parsing devam eder.
+
+Browser'lar harici CSS dosyalarını aşamalı olarak işlemez ve CSSOM ağacı güncellemesi, stil sayfasındaki tüm CSS kuralları işlendikten sonra gerçekleşir. CSSOM ağacı güncellemesi tamamlandığında, render ağacı güncellenir ve ardından ekranda işlenir.
+
+CSS, render engelleyen bir kaynaktır. Browser harici bir stil sayfası getirmek için istekte bulunduğunda, render tree yapımı durdurulur. Bu nedenle, critical rendering path (CRP)'de  takılır ve ekranda hiçbir şey işlenmez. Bununla birlikte, stil sayfası arka planda indirilirken DOM ağacı yapımı devam etmektedir.
+
+Stil sayfası ayrıştırıldıktan ve CSSOM güncellendikten sonra render tree güncellenir ve CRP engeli kaldırılır. Bu da ekranda render tree boyanmasına yol açar. Bu nedenle, tüm harici stil sayfalarının mümkün olduğunca erken, muhtemelen baş bölümünde yüklenmesi önerilir.
+
+Bir stil sayfası arka planda indirilirken, main thread yüklenen stil sayfası tarafından engellenmediği için JavaScript yürütülebilir. JavaScript, bir DOM element'inin CSS property'lerine erişirse (CSSOM API ile), uygun bir değer alırız (default CSSOM durumuna göre). Ancak stil sayfası indirilip ayrıştırıldığında, bu da CSSOM güncellemesine yol açar. Yeni CSSOM güncellemesi o DOM element'inin CSS property'lerini değiştirebileceğinden JavaScript'imiz artık element'in kötü bir CSS property'sine sahiptir. Bu nedenle, stil sayfası indirilirken JavaScript'i yürütmek güvenli değildir.
+
+#### Document’s `DOMContentLoaded` Event
+
+DOMContentLoaded (DCL) olayı, browser'ın mevcut tüm HTML'den eksiksiz bir DOM ağacı oluşturduğu bir zaman noktasını temsil eder.
+
+````javascript
+document.addEventListener('DOMContentLoaded', function(e) {
+    console.log('DOM is fully parsed!');
+});
+````
+
+#### Window’s `load` Event
+
+Harici stylesheet ve dosyaların indirildiği ve web uygulamasının indirmeyi bitirdiği bir zaman noktasını temsil eder.
+
+````javascript
+window.addEventListener('load', function(e) {
+  console.log('Page is fully loaded!');
+});
+````
 
 
 
