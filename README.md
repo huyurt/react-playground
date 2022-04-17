@@ -241,9 +241,26 @@ React'te, istenen UI durumuna ulaşmak için adım adım talimatlar çalıştır
 
 #### How React Works?
 
+DOM ağacında yapılacak herhangi bir değişiklik layout ve repaint'i tetikleyeceği için oldukça pahalıdır. Normal yapıda, element'te yapılacak ufak bir değişlik element'in tüm container'ını değiştiriyor. [[bkz.]](###How the browser renders a web page?)
+
+React'in yaptığıysa, DOM ağacının aynısını Virtual DOM ağacı olarak tutar. Node'da herhangi bir değişiklik olduğunda Virtual DOM ağacında günceller. Ardından DOM ağacı ile karşılaştırıp, DOM ağacında sadece gerekli yerde değişikliğin yapılmasını sağlar. React bunu yaparken declarative yaklaşımı benimsemiştir. Component'leri ayrı ayrı tanımlayıp ihtiyaç duyulan yerde kullanarak esnek, tekrar kullanılabilir, test edilebilir ve hata ayıklaması kolay bir yapısı vardır.
 
 
 
+#### Building a First Custom Component
+
+Eklenecek component'ler için `src` klasörünün altına `components` adında klasör açılır. Adı pascal case [5] olacak şekilde component oluşturulur.
+
+````javascript
+// scr\components\ExpenseItem.js
+function ExpenseItem() {
+  return (
+    <h2>Expense Item!</h2>
+  );
+}
+
+export default ExpenseItem;
+````
 
 
 
@@ -305,8 +322,6 @@ JavaScript, DOM'un ne olduğunu anlayamaz. DOM, web sayfasını oluşturmak ve g
 > Geliştiriciler, DOM API'yi kullanarak HTML element'i ekleyebilir, kaldırabilir, görünümünü değiştirebilir ve event listener bağlayabilir. DOM API kullanılarak, HTML element'leri bellekte oluşturulabilir, klonlanabilir ve oluşturulan DOM ağacını etkilemeden manipüle edilebilir. Bu, dinamik web sayfası oluşturma yeteneğini sağlar.
 >
 
-
-
 #### CSS Object Model (CSSOM)
 
 Web sayfasının iyi görünmesi için CSS selector'leri ile DOM element'lerinin stillini değiştiririz.
@@ -350,8 +365,6 @@ body {
 ````
 
 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgL-MlOwaaMwzpDAKHSqtvhQh27b92fZf4MiQLbuHposEmFGhsmpTK_93_oTNlfplt3fw8Yn8xecd_PFxKAQt-2kCr8SV5-KGD21K2l3HNuQvb0v7ku-CfStDT4gTK8GHIQdHYHygnjLm6TKR4NXL6aeNW4ctZBAUuvQ18bJtszLYMjSRBFRy2XtYvU-A/s1600/1_DJg1yRx-AzkZposWbJKcaA.png">
-
-
 
 #### Render Tree
 
@@ -415,8 +428,6 @@ Critical Rendering Path:
 
 DOM ağacı, CSSOM ağacı ve rendering mantığı oluşturma işi, browser'da bulunan Browser Engine (Rendering Engine veya Layout Engine olarak da bilinir) adı verilen bir yazılım parçası kullanılarak yapılır. Bu browser motoru, bir web sayfasını HTML kodundan ekrandaki gerçek piksellere dönüştürmek için gerekli tüm element'leri ve mantığı içerir.
 
-
-
 #### Rendering Process in Browsers
 
 JavaScript engine sağlayıcıları standartlaştırılmış belirli kurallara uymak zorundadır. Bu standartlara sahip olmak browser'ların tutarlı şekilde JavaScript deneyimi sağlamasını sağlar. Ancak browser'ların rendering işleminde bu durum geçerli değildir.
@@ -474,11 +485,11 @@ window.addEventListener('load', function(e) {
 
 
 
-
-
 ## Resources
 
-- [How the browser renders a web page? — DOM, CSSOM, and Rendering](https://medium.com/jspoint/how-the-browser-renders-a-web-page-dom-cssom-and-rendering-df10531c9969#:~:text=When%20a%20web%20page%20is,the%20Render%2DTree%20from%20it)
-- [Repaints and Reflows: Manipulating the DOM responsibly](https://sites.google.com/site/getsnippet/javascript/dom/repaints-and-reflows-manipulating-the-dom-responsibly)
-- [Inside look at modern web browser (part 3)](https://developer.chrome.com/blog/inside-browser-part3/)
+1. [How the browser renders a web page? — DOM, CSSOM, and Rendering](https://medium.com/jspoint/how-the-browser-renders-a-web-page-dom-cssom-and-rendering-df10531c9969#:~:text=When%20a%20web%20page%20is,the%20Render%2DTree%20from%20it)
+2. [Repaints and Reflows: Manipulating the DOM responsibly](https://sites.google.com/site/getsnippet/javascript/dom/repaints-and-reflows-manipulating-the-dom-responsibly)
+3. [Inside look at modern web browser (part 3)](https://developer.chrome.com/blog/inside-browser-part3/)
+4. [How React Works Under the Hood](https://javascript.plainenglish.io/how-react-works-under-the-hood-277356c95e3d)
+5. [Değişken İsimlendirme Kuralları](https://juniortoexpert.com/tr/degisken-isimlendirme-kurallari/)
 
