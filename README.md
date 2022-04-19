@@ -206,7 +206,7 @@ console.log(doubleNumArray); // [2, 4, 6]
 
 ## 2. React Basics
 
-#### Component Driven Design (CDD)
+### Component Driven Design (CDD)
 
 Bir web sitesi, tekrar eden component'lerin bir araya gelmesiyle oluşur. Örneğin, bir butonu ihtiyaç duyulan yerde kullanırken kullanılan yerde her seferinde tenımlamak yerine bir kere tanımlayıp bu buton component'ini ihtiyaç duyulan yerde kullanma prensibi denilebilir.
 
@@ -239,7 +239,7 @@ React'te, istenen UI durumuna ulaşmak için adım adım talimatlar çalıştır
 
 
 
-#### How React Works?
+### How React Works?
 
 DOM ağacında yapılacak herhangi bir değişiklik layout ve repaint'i tetikleyeceği için oldukça pahalıdır. Normal yapıda, element'te yapılacak ufak bir değişlik element'in tüm container'ını değiştiriyor. [[bkz.]](###How the browser renders a web page?)
 
@@ -249,7 +249,7 @@ React'in  JSX kodu aslında gerçek kod değildir. Browser'ın console'undan web
 
 
 
-#### Building a First Custom Component
+### Building a First Custom Component
 
 Eklenecek component'ler için `src` klasörünün altına `components` adında klasör açılır. Dosya adı pascal case [5] kuralına uyacak şekilde component oluşturulur.
 
@@ -291,6 +291,146 @@ export default ExpenseItem;
 
 
 ## 3. React State & Working with Events
+
+### Working with Multiple States
+
+````jsx
+import './ExpenseForm.css';
+import { useState } from "react";
+
+const ExpenseForm = () => {
+  //const [enteredTitle, setEnteredTitle] = useState('');
+  //const [enteredAmount, setEnteredAmount] = useState('');
+  //const [enteredDate, setEnteredDate] = useState('');
+  const [userInput, setUserInput] = useState({
+    enteredTitle: '',
+    enteredAmount: '',
+    enteredDate: '',
+  });
+
+  const titleChangeHandler = (event) => {
+    //setEnteredTitle(event.target.value);
+    setUserInput((prevState) => {
+      return { ...prevState, enteredTitle: event.target.value };
+    });
+  };
+
+  const amountChangeHandler = (event) => {
+    //setEnteredAmount(event.target.value);
+    setUserInput((prevState) => {
+      return { ...prevState, enteredAmount: event.target.value };
+    });
+  };
+
+  const dateChangeHandler = (event) => {
+    //setEnteredDate(event.target.value);
+    setUserInput((prevState) => {
+      return { ...prevState, enteredDate: event.target.value };
+    });
+  };
+
+  return (
+    <form>
+      <div className="new-expense__controls">
+        <div className="new-expense__control">
+          <label>Title</label>
+          <input
+            type="text"
+            onChange={titleChangeHandler}
+          />
+        </div>
+        <div className="new-expense__control">
+          <label>Amount</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            onChange={amountChangeHandler}
+          />
+        </div>
+        <div className="new-expense__control">
+          <label>Date</label>
+          <input
+            type="date"
+            min="2022-01-01"
+            max="2025-12-31"
+            onChange={dateChangeHandler}
+          />
+        </div>
+      </div>
+      <div className="new-expense__actions">
+        <button type="submit">Add Expense</button>
+      </div>
+    </form>
+  );
+};
+
+export default ExpenseForm;
+````
+
+
+
+### Child-to-Parent Component Communication (Bottom-up)
+
+````jsx
+// src\components\Expenses\ExpensesFilter.js
+import './ExpensesFilter.css';
+
+const ExpensesFilter = (props) => {
+  const dropdownChangeHandler = (event) => {
+    props.onChangeFilter(event.target.value); // Parent'ındaki (Expenses) filteredYear değerinin güncellenmesi için yine o değeri değiştiren parent'ından gelen metot çağırılıyor.
+  };
+
+  return (
+    <div className="expenses-filter">
+      <div className="expenses-filter__control">
+        <label>Filter by year</label>
+        <select value={props.selected} onChange={dropdownChangeHandler}>
+          <option value='2025'>2025</option>
+          <option value='2024'>2024</option>
+          <option value='2023'>2023</option>
+          <option value='2022'>2022</option>
+        </select>
+      </div>
+    </div>
+  );
+};
+
+export default ExpensesFilter;
+
+
+// src\components\Expenses\Expenses.js
+import { useState } from "react";
+import './Expenses.css';
+import ExpenseItem from "./ExpenseItem";
+import Card from "../UI/Card";
+import ExpensesFilter from "./ExpensesFilter";
+
+const Expenses = (props) => {
+  const [filteredYear, setFilteredYear] = useState('2023');
+
+  const filterChangeHandler = (selectedYear) => { // Child'ında (ExpensesFilter) bu metot çağırılarak filteredYear değeri güncelleniyor.
+    setFilteredYear(selectedYear);
+  };
+
+  return (
+    <Card className="expenses">
+      <ExpensesFilter selected={filteredYear} onChangeFilter={filterChangeHandler}/>
+      <ExpenseItem
+        title={props.items[0].title}
+        date={props.items[0].date}
+        amount={props.items[0].amount}
+      />
+    </Card>
+  );
+}
+
+export default Expenses;
+````
+
+
+
+## 4. Rendering Lists & Conditional Content
 
 
 
