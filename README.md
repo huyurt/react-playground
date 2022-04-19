@@ -245,22 +245,52 @@ DOM ağacında yapılacak herhangi bir değişiklik layout ve repaint'i tetikley
 
 React'in yaptığıysa, DOM ağacının aynısını Virtual DOM ağacı olarak tutar. Node'da herhangi bir değişiklik olduğunda Virtual DOM ağacında günceller. Ardından DOM ağacı ile karşılaştırıp, DOM ağacında sadece gerekli yerde değişikliğin yapılmasını sağlar. React bunu yaparken declarative yaklaşımı benimsemiştir. Component'leri ayrı ayrı tanımlayıp ihtiyaç duyulan yerde kullanarak esnek, tekrar kullanılabilir, test edilebilir ve hata ayıklaması kolay bir yapısı vardır.
 
+React'in  JSX kodu aslında gerçek kod değildir. Browser'ın console'undan web sayfasının son haline bakıldığında custom component'lerin olmadığı, dönüştürülmüş hali görülebilir.
+
 
 
 #### Building a First Custom Component
 
-Eklenecek component'ler için `src` klasörünün altına `components` adında klasör açılır. Adı pascal case [5] olacak şekilde component oluşturulur.
+Eklenecek component'ler için `src` klasörünün altına `components` adında klasör açılır. Dosya adı pascal case [5] kuralına uyacak şekilde component oluşturulur.
 
-````javascript
-// scr\components\ExpenseItem.js
-function ExpenseItem() {
+````jsx
+// scr\components\Expenses.js
+import './Expenses.css';
+import { ExpenseItem } from './ExpenseItem.js';
+
+const Expenses = (props) => {
   return (
-    <h2>Expense Item!</h2>
+      <div>
+          <ExpenseItem className="red">
+              <div>Item Description</div>
+          </ExpenseItem>
+      </div>
+  );
+}
+
+export default ExpenseItem;
+
+
+// scr\components\ExpenseItem.js
+import './ExpenseItem.css';
+
+const ExpenseItem = (props) => {
+  return (
+      <div>
+          <h2 className={'expense-item ' + props.className}>
+              Expense Item!
+          </h2>
+          {props.children} // children özel bir prop'tur.
+      </div>
   );
 }
 
 export default ExpenseItem;
 ````
+
+
+
+## 3. React State & Working with Events
 
 
 
