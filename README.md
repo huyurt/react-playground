@@ -6,8 +6,6 @@
 
 Bir web sitesi, tekrar eden component'lerin bir araya gelmesiyle oluşur. Örneğin, bir butonu ihtiyaç duyulan yerde kullanırken kullanılan yerde her seferinde tenımlamak yerine bir kere tanımlayıp bu buton component'ini ihtiyaç duyulan yerde kullanma prensibi denilebilir.
 
-
-
 Bu yaklaşımın faydaları:
 
 - Hızlı geliştirme
@@ -613,7 +611,7 @@ Ayrıca, script element'i için async attribute'una benzer şekilde çalışan a
 
 Browser, <style> bloğunu bulduğunda tüm gömülü CSS'i ayrıştırır ve CSSOM ağacını yeni CSS kurallarıyla günceller. Sonrasonda, HTML'i normal şekilde ayrıştırmaya devam edecektir. Aynısı satır içi stil için de geçerlidir. Ancak, browser harici bir stylesheet dosyasıyla karşılaştığında parsing'i engellemez, bu nedenle browser arka planda sessizce indirebilir ve DOM parsing devam eder.
 
-Browser'lar harici CSS dosyalarını aşamalı olarak işlemez ve CSSOM ağacı güncellemesi, stil sayfasındaki tüm CSS kuralları işlendikten sonra gerçekleşir. CSSOM ağacı güncellemesi tamamlandığında, render ağacı güncellenir ve ardından ekranda işlenir.
+Browser'lar harici CSS dosyalarını aşamalı olarak işlemez ve CSSOM ağacı güncellemesi, stil sayfasındaki tüm CSS kuralları işlendikten sonra gerçekleşir. CSSOM ağacı güncellemesi tamamlandığında, Render Tree güncellenir ve ardından ekranda işlenir.
 
 CSS, render engelleyen bir kaynaktır. Browser harici bir stil sayfası getirmek için istekte bulunduğunda, render tree yapımı durdurulur. Bu nedenle, critical rendering path (CRP)'de  takılır ve ekranda hiçbir şey işlenmez. Bununla birlikte, stil sayfası arka planda indirilirken DOM ağacı yapımı devam etmektedir.
 
