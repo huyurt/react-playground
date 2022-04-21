@@ -1,16 +1,20 @@
 import styles from './AddUser.module.css';
 import Button from "../UI/Button";
 import Card from "../UI/Card";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ErrorModal from "../UI/ErrorModal";
 
 const AddUser = (props) => {
-  const [username, setUsername] = useState('');
-  const [age, setAge] = useState('');
+  const usernameRef = useRef();
+  const ageRef = useRef();
+  //const [username, setUsername] = useState('');
+  //const [age, setAge] = useState('');
   const [error, setError] = useState();
 
   const submitHandler = (event) => {
     event.preventDefault();
+    const username = usernameRef.current.value;
+    const age = ageRef.current.value;
 
     if (username.trim().length === 0 || age.trim().length === 0) {
       setError({
@@ -20,7 +24,7 @@ const AddUser = (props) => {
       return;
     }
 
-    if (age <= 0) {
+    if (+age < 1) {
       setError({
         title: 'Invalid Age',
         message: 'Please enter a valid age (> 0).',
@@ -35,8 +39,10 @@ const AddUser = (props) => {
     };
 
     props.onAddUser(user);
-    setUsername('');
-    setAge('');
+    usernameRef.current.value = '';
+    ageRef.current.value = '';
+    //setUsername('');
+    //setAge('');
   }
 
   const errorHandler = () => {
@@ -58,15 +64,17 @@ const AddUser = (props) => {
           <input
             id="username"
             type="text"
-            value={username}
-            onChange={el => setUsername(el.target.value)}
+            ref={usernameRef}
+            //value={username}
+            //onChange={el => setUsername(el.target.value)}
           />
           <label htmlFor="age">Age (Years)</label>
           <input
             id="age"
             type="number"
-            value={age}
-            onChange={el => setAge(el.target.value)}
+            ref={ageRef}
+            //value={age}
+            //onChange={el => setAge(el.target.value)}
           />
           <Button type="submit">Add User</Button>
         </form>

@@ -172,7 +172,8 @@ import './ExpensesFilter.css';
 
 const ExpensesFilter = (props) => {
   const dropdownChangeHandler = (event) => {
-    props.onChangeFilter(event.target.value); // Parent'ındaki (Expenses) filteredYear değerinin güncellenmesi için yine o değeri değiştiren parent'ından gelen metot çağırılıyor.
+    props.onChangeFilter(event.target.value); // Parent'ındaki (Expenses) filteredYear
+      // değerinin güncellenmesi için yine o değeri değiştiren parent'ından gelen metot çağırılıyor.
   };
 
   return (
@@ -203,7 +204,8 @@ import ExpensesFilter from "./ExpensesFilter";
 const Expenses = (props) => {
   const [filteredYear, setFilteredYear] = useState('2023');
 
-  const filterChangeHandler = (selectedYear) => { // Child'ında (ExpensesFilter) bu metot çağırılarak filteredYear değeri güncelleniyor.
+  const filterChangeHandler = (selectedYear) => { // Child'ında (ExpensesFilter) bu metot
+      // çağırılarak filteredYear değeri güncelleniyor.
     setFilteredYear(selectedYear);
   };
 
@@ -224,7 +226,107 @@ export default Expenses;
 
 
 
-## 3. Rendering Lists & Conditional Content
+### Working with Refs (useRef Hook)
+
+Değişken bir değeri güncellendikten sonra re-render'a sebep olmadan saklamak için kullanılır.
+
+DOM ağacındaki element'e doğrudan erişmek için kullanılır.
+
+
+
+useState ile yapılan input'tan veri okuma işlemi biraz daha az kod yazılarak useRef ile yapılabilir.
+
+````jsx
+const AddUser = (props) => {
+  const usernameRef = useRef();
+  const ageRef = useRef();
+  //const [username, setUsername] = useState('');
+  //const [age, setAge] = useState('');
+  const [error, setError] = useState();
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+      
+    const username = usernameRef.current.value;
+    const age = ageRef.current.value;
+
+    if (username.trim().length === 0 || age.trim().length === 0) {
+      setError({
+        title: 'Geçersiz Değer',
+        message: 'Lütfen kullanıcı ismi ve yaş giriniz.',
+      });
+      return;
+    }
+
+    if (+age < 1) {
+      setError({
+        title: 'Geçersiz Yaş',
+        message: 'Lütfen geçerli bir yaş giriniz.',
+      });
+      return;
+    }
+
+    const user = {
+      id: Math.random(),
+      username: username,
+      age: +age,
+    };
+
+    props.onAddUser(user);
+    usernameRef.current.value = '';
+    ageRef.current.value = '';
+    //setUsername('');
+    //setAge('');
+  }
+  
+  //const usernameChangeHandler = (event) => {
+  //  setUsername(event.target.value);
+  //};
+  
+  //const ageChangeHandler = (event) => {
+  //  setAge(event.target.value);
+  //};
+
+  const errorHandler = () => {
+    setError(null);
+  };
+
+  return (
+    <div>
+      {error && (
+        <ErrorModal
+          title={error.title}
+          message={error.message}
+          onConfirm={errorHandler}
+        />
+      )}
+      <Card className={styles.input}>
+        <form onSubmit={submitHandler}>
+          <label htmlFor="username">Kullanıcı İsmi</label>
+          <input
+            id="username"
+            type="text"
+            ref={usernameRef}
+            //value={username}
+            //onChange={usernameChangeHandler}
+          />
+          <label htmlFor="age">Yaş</label>
+          <input
+            id="age"
+            type="number"
+            ref={ageRef}
+            //value={age}
+            //onChange={ageChangeHandler}
+          />
+          <Button type="submit">Kullanıcı Ekle</Button>
+        </form>
+      </Card>
+    </div>
+  );
+};
+
+export default AddUser;
+````
 
 
 
@@ -667,4 +769,5 @@ window.addEventListener('load', function(e) {
 3. [Inside look at modern web browser (part 3)](https://developer.chrome.com/blog/inside-browser-part3/)
 4. [How React Works Under the Hood](https://javascript.plainenglish.io/how-react-works-under-the-hood-277356c95e3d)
 5. [Değişken İsimlendirme Kuralları](https://juniortoexpert.com/tr/degisken-isimlendirme-kurallari/)
+6. [React useRef Hook](https://www.w3schools.com/react/react_useref.asp)
 
