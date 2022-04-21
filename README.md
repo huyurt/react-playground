@@ -228,13 +228,11 @@ export default Expenses;
 
 ### Working with Refs (useRef Hook)
 
-Değişken bir değeri güncellendikten sonra re-render'a sebep olmadan saklamak için kullanılır.
+Değişken bir değerin değeri güncellendikten sonra güncellenen değeri re-render'a sebep olmadan saklamak için kullanılır.
 
 DOM ağacındaki element'e doğrudan erişmek için kullanılır.
 
-
-
-useState ile yapılan input'tan veri okuma işlemi biraz daha az kod yazılarak useRef ile yapılabilir.
+Bazı durumlarda useState'e alternatif olarak da kullanılabilir.
 
 ````jsx
 const AddUser = (props) => {
@@ -329,6 +327,18 @@ export default AddUser;
 ````
 
 
+
+### Handling Side Effects, Using Reducers & Context API
+
+#### useEffect
+
+Component oluştuktan sonra bir şeylerin yapılması gerektiği belirtilir. React, DOM güncellemelerini yaptıktan sonra onu çağıracaktır. Varsayılan olarak, hem ilk oluşturmadan sonra hem de her güncellemeden sonra çalışır.
+
+Timeouts, subscriptions, event listeners gibi effect'lerin memory leak'e neden olmaması için temizlenmesi gerekir.
+
+````jsx
+//  Api'den gelen verilerle ülke, şehir seçimi örneği eklenecek.
+````
 
 
 
@@ -770,4 +780,5 @@ window.addEventListener('load', function(e) {
 4. [How React Works Under the Hood](https://javascript.plainenglish.io/how-react-works-under-the-hood-277356c95e3d)
 5. [Değişken İsimlendirme Kuralları](https://juniortoexpert.com/tr/degisken-isimlendirme-kurallari/)
 6. [React useRef Hook](https://www.w3schools.com/react/react_useref.asp)
+7. [Effect Hook'unu Kullanmak](https://tr.reactjs.org/docs/hooks-effect.html)
 
