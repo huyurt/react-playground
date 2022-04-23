@@ -403,7 +403,7 @@ const Login = (props) => {
             emailState.isValid === false ? classes.invalid : ''
           }`}
         >
-          <label htmlFor="email">E-Mail</label>
+          <label htmlFor="email">E-Posta</label>
           <input
             type="email"
             id="email"
@@ -416,7 +416,7 @@ const Login = (props) => {
             passwordIsValid === false ? classes.invalid : ''
           }`}
         >
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">Şifre</label>
           <input
             type="password"
             id="password"
@@ -439,6 +439,150 @@ export default Login;
 ````
 
 #### useContext
+
+`useState` kullanarak bir değerin component'ler arasında taşınmasının zorlaştığı durumlarda, global state olarak kullanılır.
+
+`useContext`‘i çağıran bir component, context değeri her değiştiğinde re-render edilecektir. (Provider-Consumer)
+
+State'in kısa süreli frekanslarda çok fazla değiştiği durumlar için kullanımı uygun değil. Bu durumda Redux, MobX gibi store management kütüphaneleri devreye giriyor.
+
+#### useImperativeHandle
+
+`ref` kullanırken, dışarıdan erişilen başka bir component'in özelliğini değiştirmeyi sağlar.
+
+<img height="250" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCQbItAcJ7-3A8FgWRIm7VNQd2HHSjsgshbkidNvhLSc6_oV30No2QMQD-UZKaeg7A_65vm84lHk8-YFcfnh1cXg5AJ2E0H2tw3D5WFByE-6JhxhFPwHpIxsdNUXdMqRqR4F3aXt6DA0O7QbFCBmgSeVlXtMKKxBGab0hl6RzI-3EVziSEbbkx9STzBA/s1600/useImperativeHandle.gif">
+
+````jsx
+// src\components\Login\Login.js
+import React, { useEffect, useReducer, useState, useContext, useRef } from 'react';
+import Card from '../UI/Card/Card';
+import classes from './Login.module.css';
+import Button from '../UI/Button/Button';
+import AuthContext from "../../context/auth-context";
+import Input from "../UI/Input/Input";
+
+const emailReducer = (state, action) => {
+  if (action.type === 'USER_INPUT') {
+    return { value: action.val, isValid: action.val.includes('@') };
+  }
+  return { value: '', isValid: false };
+};
+
+const passwordReducer = (state, action) => {
+  if (action.type === 'USER_INPUT') {
+    return { value: action.val, isValid: action.val.trim().length > 6 };
+  }
+  return { value: '', isValid: false };
+};
+
+const Login = () => {
+  const authContext = useContext(AuthContext);
+
+  const [formIsValid, setFormIsValid] = useState(false);
+
+  const [emailState, dispatchEmail] = useReducer(emailReducer, { value: '', isValid: undefined });
+  const [passwordState, dispatchPassword] = useReducer(passwordReducer, { value: '', isValid: undefined });
+
+  const emailRef = useRef();
+  const passwordRef = useRef();
+
+  useEffect(() => {
+    setFormIsValid(
+      emailState.isValid && passwordState.isValid
+    );
+  }, [emailState.isValid, passwordState.isValid]);
+
+  const emailChangeHandler = (event) => {
+    dispatchEmail({ type: 'USER_INPUT', val: event.target.value });
+  };
+
+  const passwordChangeHandler = (event) => {
+    dispatchPassword({ type: 'USER_INPUT', val: event.target.value });
+  };
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+
+    if (formIsValid) {
+      authContext.onLogin(emailState.value, passwordState.value);
+    } else if (!emailState.isValid) {
+      emailRef.current.focus();
+    } else if (!passwordState.isValid) {
+      passwordRef.current.focus();
+    }
+  };
+
+  return (
+    <Card className={classes.login}>
+      <form onSubmit={submitHandler}>
+        <Input
+          ref={emailRef}
+          type="email"
+          id="email"
+          label="E-Posta"
+          value={emailState.value}
+          isValid={emailState.isValid}
+          onChange={emailChangeHandler}
+        />
+        <Input
+          ref={passwordRef}
+          type="password"
+          id="password"
+          label="Şifre"
+          value={passwordState.value}
+          isValid={passwordState.isValid}
+          onChange={passwordChangeHandler}
+        />
+        <div className={classes.actions}>
+          <Button type="submit" className={classes.btn}>
+            Login
+          </Button>
+        </div>
+      </form>
+    </Card>
+  );
+};
+
+export default Login;
+
+
+// src\components\UI\Input\Input.js
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import classes from './Input.module.css';
+
+const Input = forwardRef((props, ref) => {
+  const inputRef = useRef();
+
+  const activate = () => {
+    inputRef.current.focus();
+  };
+
+  useImperativeHandle(ref, () => {
+    return {
+      focus: activate, // Login'de focus olarak çağırılan metot buradaki activate metodu ile eziliyor.
+    };
+  });
+
+  return (
+    <div
+      className={`${classes.control} ${
+        props.isValid === false ? classes.invalid : ''
+      }`}
+    >
+      <label htmlFor={props.id}>{props.label}</label>
+      <input
+        ref={inputRef}
+        type={props.type}
+        id={props.id}
+        value={props.value}
+        onChange={props.onChange}
+      />
+    </div>
+  );
+});
+
+export default Input;
+````
 
 
 
