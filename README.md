@@ -547,6 +547,7 @@ export default Login;
 
 
 // src\components\UI\Input\Input.js
+// forwardRef bir ref'i üst elementten alt elementlerin birine otomatik olarak aktarma tekniğidir.
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import classes from './Input.module.css';
 
